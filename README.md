@@ -4,6 +4,6 @@
 
 内容参考了[Server World](https://www.server-world.info/en/)，再加上平时收集的资料。
 
-本文档使用GitBook发布:<https://www.gitbook.com/book/izombielandgit/dos-bat-tutorial/details>
+本文档使用GitBook发布:<https://www.gitbook.com/book/izombielandgit/centos7-server-configuration/details>
 
 本文档GitHub:<https://github.com/izombielandgit/CentOS7-Server-Configuration>
