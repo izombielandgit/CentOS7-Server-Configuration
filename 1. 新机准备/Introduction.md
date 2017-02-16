@@ -1,3 +1,3 @@
-# First Chapter
+# 1. 新机准备
 
-GitBook allows you to organize your book into chapters, each chapter is stored in a separate file like this one.
+系统的下载和安装就不单独写了，本章主要记录一下新装系统后的一些基础配置以让系统更适合自己的使用。
