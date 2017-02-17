@@ -1,0 +1,7 @@
+{
+    "plugins": [
+        "anchors"
+    ],
+    "pluginsConfig": {
+    }
+}
