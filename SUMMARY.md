@@ -15,4 +15,5 @@
 * [2. 虚拟化](2. 虚拟化/Introduction.md)
   * [2.1. KVM](2. 虚拟化/2.1. KVM.md)
 * [3. 桌面环境](3. 桌面环境/Introduction.md)
+  * [3.1. GNOME桌面](3. 桌面环境/3.1. GNOME桌面.md)
 
