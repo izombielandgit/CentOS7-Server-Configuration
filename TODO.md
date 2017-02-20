@@ -2,3 +2,14 @@
 
 firewalld的一些简单配置
 
+#### 1.8.2.2. Windows
+
+## 1.10. 添加硬盘
+
+### 2.1.3. 图形界面管理
+
+[桌面环境](https://www.server-world.info/en/note?os=CentOS_7&p=x)
+
+有时间更换为中文版及对应截图
+
+
