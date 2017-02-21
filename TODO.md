@@ -1,9 +1,5 @@
 
 
-#### 1.8.2.2. Windows
-
-WINDOWS NTP客户端
-
 ### 1.9.2. 配置SSH客户端
 
 及SSH下其他内容
