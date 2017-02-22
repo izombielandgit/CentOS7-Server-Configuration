@@ -16,8 +16,6 @@
 
 配置存储虚拟机映像的存储服务器。存储服务器可以使用NFS，iSCSI，GlusterFS。本示例使用NFS存储服务器。
 
-### 2.1.8. SPICE客户端
-
 ## 3.1. GNOME桌面
 
 [设置了系统图形登录](https://www.server-world.info/en/note?os=CentOS_7&p=runlevel)
