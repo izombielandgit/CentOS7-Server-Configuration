@@ -22,4 +22,5 @@
   * [3.5. RDP连接到Windows](3. 桌面环境/3.5. RDP连接到Windows.md)
 * [4. 存储服务器](4. 存储服务器/Introduction.md)
   * [4.1. NFS服务器](4. 存储服务器/4.1. NFS服务器.md)
+  * [4.2. iSCSI Target](4. 存储服务器/4.2. iSCSI Target.md)
 
