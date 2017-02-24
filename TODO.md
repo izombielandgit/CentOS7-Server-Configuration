@@ -16,7 +16,9 @@
 
 [设置了系统图形登录](https://www.server-world.info/en/note?os=CentOS_7&p=runlevel)
 
+### 5.1.11. 
 
+配置LDAP
 
 
 
