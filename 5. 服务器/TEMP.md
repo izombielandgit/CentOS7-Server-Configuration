@@ -1,4 +1,4 @@
-### 5.1.17 配置mod_proxy
+### 5.1.17. 配置mod_proxy
 
 #### 5.1.17.1. 正向代理
 
@@ -126,3 +126,13 @@ LoadModule proxy_scgi_module modules/mod_proxy_scgi.so
 访问前端服务器以确保后端服务器响应如下所示：
 
 ![httpd-mod-proxy-reverse2](../Contents/httpd-mod-proxy-reverse2.png)
+
+### 5.1.18. 配置mod_proxy
+
+
+
+
+
+
+
+
