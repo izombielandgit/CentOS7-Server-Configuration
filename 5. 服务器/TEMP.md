@@ -127,12 +127,40 @@ LoadModule proxy_scgi_module modules/mod_proxy_scgi.so
 
 ![httpd-mod-proxy-reverse2](../Contents/httpd-mod-proxy-reverse2.png)
 
-### 5.1.18. 配置mod_proxy
+### 5.1.18. 配置mod_proxy_wstunnel
 
+启用mod_proxy_wstunnel模块以设置WebSocket代理。
 
+例如，对于在`localhost:1337`上侦听的应用程序（[示例应用程序来自这里](https://www.server-world.info/en/note?os=CentOS_7&p=nodejs)），配置httpd在/chat设置代理：
 
+编辑`/etc/httpd/conf.modules.d/00-proxy.conf`文件：
 
+```
+# 添加到最后
+LoadModule proxy_wstunnel_module modules/mod_proxy_wstunnel.so
+```
 
+编辑`/etc/httpd/conf.d/wstunnel.conf`文件：
 
+```
+ProxyRequests Off
+<Proxy *>
+    Require all granted
+</Proxy>
 
+ProxyPass /socket.io/ http://127.0.0.1:1337/socket.io/
+ProxyPassReverse /socket.io/ http://127.0.0.1:1337/socket.io/
 
+ProxyPass /chat http://127.0.0.1:1337/
+ProxyPassReverse /chat http://127.0.0.1:1337/
+```
+
+`systemctl restart httpd`
+
+如果启用了SELinux，更改规则如下：
+
+`semanage port -a -t http_port_t -p tcp 1337`
+
+访问示例应用程序以确保它在代理环境中正常工作：
+
+![httpd-mod-proxy-wstunnel](../Contents/httpd-mod-proxy-wstunnel.png)
