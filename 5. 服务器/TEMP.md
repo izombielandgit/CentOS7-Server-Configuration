@@ -1,131 +1,90 @@
-### 5.1.20. 配置mod_limitipconn
+### 5.1.21. 配置mod_evasive
 
-使用mod_limitipconn限制每个IP地址的并发连接。
+启用mod_evasive模块来防御DoS攻击等。
 
-`yum --enablerepo=epel -y install mod_limitipconn` # 从EPEL安装
+`yum --enablerepo=epel -y install mod_evasive` # 从EPEL安装
 
-编辑`/etc/httpd/conf.d/limitipconn.conf`文件：
-
-```
-# 默认设置没有限制
-MaxConnPerIP 0
-
-# /limit目录设置
-<Location /limit>
-    # 限制并发连接3
-    MaxConnPerIP 3
-    # 如果MIME类型为“text/*”，则不适用上面规则
-    NoIPLimit text/*
-</Location>
-
-# /limit2目录设置
-<Location /limit2>
-    # 限制并发连接2
-    MaxConnPerIP 2
-    # 如果MIME类型为“application/x-tar”，则不适用上面规则
-    OnlyIPLimit application/x-tar
-</Location>
-```
-
-`systemctl restart httpd`
-
-使用httpd-tools包中包含的命令“ab”验证是否正常工作，如下所示：
-
-`ab -n 10 -c 10 http://localhost/limit/index.html`
+编辑`/etc/httpd/conf.d/mod_evasive.conf`文件：
 
 ```
-This is ApacheBench, Version 2.3 <$Revision: 1430300 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
+# 每页间隔相同页面的请求数量的阈值
+DOSPageCount   5
 
-Benchmarking localhost (be patient).....done
+# 每个站点间隔相同侦听器上的同一客户端对任何对象的请求总数的阈值
+DOSSiteCount   50
 
-Server Software:        Apache/2.4.6
-Server Hostname:        localhost
-Server Port:            80
+# 页计数阈值的时间间隔
+DOSPageInterval   1
 
-Document Path:          /limit/index.html
-Document Length:        130 bytes
+# 站点计数阈值的时间间隔
+DOSSiteInterval   1
 
-Concurrency Level:      10
-Time taken for tests:   0.004 seconds
-Complete requests:      10
-Failed requests:        0
-Write errors:           0
-Total transferred:      3910 bytes
-HTML transferred:       1300 bytes
-Requests per second:    2223.21 [#/sec] (mean)
-Time per request:       4.498 [ms] (mean)
-Time per request:       0.450 [ms] (mean, across all concurrent requests)
-Transfer rate:          848.90 [Kbytes/sec] received
+# 如果将客户端添加到阻止列表中，则客户端将被阻止的时间量（以秒为单位）
+DOSBlockingPeriod   300
+
+# 如果IP地址被列入黑名单，通知邮件地址
+DOSEmailNotify   root@localhost
+
+# 指定日志目录
+DOSLogDir   "/var/log/mod_evasive"
+```
+
+```
+mkdir /var/log/mod_evasive
+chown apache. /var/log/mod_evasive
+systemctl restart httpd
+```
+
+使用RPM软件包中包含的测试工具进行测试：
+
+`perl /usr/share/doc/mod_evasive-*/test.pl`
+
+```
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
+HTTP/1.1 200 OK
 .....
 .....
-```
-
-`ab -n 10 -c 10 http://localhost/limit/test.gif`
-
-```
-This is ApacheBench, Version 2.3 <$Revision: 1430300 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
-
-Benchmarking localhost (be patient).....done
-
-
-Server Software:        Apache/2.4.6
-Server Hostname:        localhost
-Server Port:            80
-
-Document Path:          /limit/test.gif
-Document Length:        228 bytes
-
-Concurrency Level:      10
-Time taken for tests:   0.005 seconds
-Complete requests:      10
-Failed requests:        7
-   (Connect: 0, Receive: 0, Length: 7, Exceptions: 0)
-Write errors:           0
-Non-2xx responses:      7
-Total transferred:      4838 bytes
-HTML transferred:       2777 bytes
-Requests per second:    2182.45 [#/sec] (mean)
-Time per request:       4.582 [ms] (mean)
-Time per request:       0.458 [ms] (mean, across all concurrent requests)
-Transfer rate:          1031.12 [Kbytes/sec] received
+HTTP/1.1 403 Forbidden  # 如果被阻止，转到“403 Forbidden”
+HTTP/1.1 403 Forbidden
+HTTP/1.1 403 Forbidden
 .....
 .....
+HTTP/1.1 403 Forbidden
 ```
 
-`ab -n 10 -c 10 http://localhost/limit2/test.tar`
+`ll /var/log/mod_evasive`
 
 ```
-This is ApacheBench, Version 2.3 <$Revision: 1430300 $>
-Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-Licensed to The Apache Software Foundation, http://www.apache.org/
+total 4
+-rw-r--r-- 1 apache apache 5 Aug  5 15:42 dos-127.0.0.1
+```
 
-Benchmarking localhost (be patient).....done
+如果设置了通知，则发送如下：
 
+`mail`
 
-Server Software:        Apache/2.4.6
-Server Hostname:        localhost
-Server Port:            80
+```
+Heirloom Mail version 12.5 7/5/10.  Type ? for help.
+"/var/spool/mail/root": 1 message 1 new
+>N  1 Apache                Wed Aug  3 19:42  20/673
+& 1
+Message  1:
+From apache@www.srv.world  Wed Aug  3 19:42:55 2015
+Return-Path: <apache@www.srv.world>
+X-Original-To: root@localhost
+Delivered-To: root@localhost.srv.world
+Date: Wed, 05 Aug 2015 15:42:54 +0900
+To: root@localhost.srv.world
+User-Agent: Heirloom mailx 12.5 7/5/10
+Content-Type: text/plain; charset=us-ascii
+From: apache@www.srv.world (Apache)
+Status: R
 
-Document Path:          /limit2/test.tar
-Document Length:        10240 bytes
+To: root@localhost
+Subject: HTTP BLACKLIST 127.0.0.1
 
-Concurrency Level:      10
-Time taken for tests:   0.006 seconds
-Complete requests:      10
-Failed requests:        8
-   (Connect: 0, Receive: 0, Length: 8, Exceptions: 0)
-Write errors:           0
-Non-2xx responses:      8
-Total transferred:      24900 bytes
-HTML transferred:       22872 bytes
-Requests per second:    1785.40 [#/sec] (mean)
-Time per request:       5.601 [ms] (mean)
-Time per request:       0.560 [ms] (mean, across all concurrent requests)
-Transfer rate:          4341.44 [Kbytes/sec] received
-.....
-.....
+mod_evasive HTTP Blacklisted 127.0.0.1
 ```
