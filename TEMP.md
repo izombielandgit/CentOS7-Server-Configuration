@@ -1,3 +1,10 @@
+# 是否读取“.htaccess”文件。“All”为是，“None”为否
+# 语法为：AllowOverride All|None|directive-type [directive-type] ...
+# 从安全性考虑，根目录的AllowOverride属性一般配置成“None”
+AllowOverride None
+
+
+
 使用非80端口（如81）：
 
 编辑`/etc/httpd/conf/httpd.conf`文件：
@@ -29,6 +36,6 @@ Listen 81
 
 `systemctl restart httpd`
 
-通过IP或域名
+如果未设置其他虚拟主机，通过IP或域名访问Web服务器是访问到默认的不存在的网页，然后再根据自己的需要设置虚拟主机
 
 
