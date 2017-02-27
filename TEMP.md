@@ -1,7 +1,4 @@
-# 是否读取“.htaccess”文件。“All”为是，“None”为否
-# 语法为：AllowOverride All|None|directive-type [directive-type] ...
-# 从安全性考虑，根目录的AllowOverride属性一般配置成“None”
-AllowOverride None
+
 
 
 
