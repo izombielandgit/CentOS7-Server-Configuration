@@ -2,18 +2,7 @@
 
 
 
-使用非80端口（如81）：
 
-编辑`/etc/httpd/conf/httpd.conf`文件：
-
-```
-# 添加（或修改）一行
-Listen 81
-```
-
-`systemctl restart httpd`
-
-添加对应端口的防火墙规则。
 
 
 
