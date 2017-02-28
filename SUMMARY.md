@@ -27,4 +27,4 @@
   * [5.1. Apache httpd](5. 服务器/5.1. Apache httpd.md)
   * [5.2. Nginx](5. 服务器/5.2. Nginx.md)
   * [5.3. 创建SSL证书](5. 服务器/5.3. 创建SSL证书.md)
-* [6. 数据库](6.%20数据库/Introduction.md)
+* [6. 数据库](6. 数据库/Introduction.md)
