@@ -32,3 +32,5 @@
   * [6.2. PostgreSQL](6. 数据库/6.2. PostgreSQL.md)
   * [6.3. Oracle Database](6. 数据库/6.3. Oracle Database.md)
   * [6.4. Memcached](6. 数据库/6.4. Memcached.md)
+  * [6.5. Redis](6. 数据库/6.5. Redis.md)
+  
