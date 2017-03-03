@@ -37,5 +37,7 @@
   * [6.5. Redis](6. 数据库/6.5. Redis.md)
 * [7. 目录服务](7. 目录服务/Introduction.md)
   * [7.1. FreeIPA](7. 目录服务/7.1. FreeIPA.md)
+  * [7.2. OpenLDAP](7. 目录服务/7.2. OpenLDAP.md)
+  * [7.3. NIS.md](7. 目录服务/7.3. NIS.md.md)
 
-  
+
