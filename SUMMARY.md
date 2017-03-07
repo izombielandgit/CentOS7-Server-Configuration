@@ -39,5 +39,7 @@
   * [7.1. FreeIPA](7. 目录服务/7.1. FreeIPA.md)
   * [7.2. OpenLDAP](7. 目录服务/7.2. OpenLDAP.md)
   * [7.3. NIS](7. 目录服务/7.3. NIS.md)
-
+* [8. 文件服务器](8. 文件服务器/Introduction.md)
+  * [8.1. FTP](8. 文件服务器/8.1. FTP.md)
+  * [8.2. Samba](8. 文件服务器/8.2. Samba.md)
 
