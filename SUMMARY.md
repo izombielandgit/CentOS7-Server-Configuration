@@ -56,5 +56,11 @@
   * [11.3. Pound](11. 负载均衡/11.3. Pound.md)
   * [11.4. LVS](11. 负载均衡/11.4. LVS.md)
 * [12. 系统监测](12. 系统监测/Introduction.md)
-
-
+  * [12.1. OSQuery](12. 系统监测/12.1. OSQuery.md)
+  * [12.2. Munin](12. 系统监测/12.2. Munin.md)
+  * [12.3. SysStat](12. 系统监测/12.3. SysStat.md)
+  * [12.4. Zabbix](12. 系统监测/12.4. Zabbix.md)
+  * [12.5. MRTG](12. 系统监测/12.5. MRTG.md)
+  * [12.6. Cacti](12. 系统监测/12.6. Cacti.md)
+  * [12.7. Nagios](12. 系统监测/12.7. Nagios.md)
+  * [12.8. Monitorix](12. 系统监测/12.8. Monitorix.md)
