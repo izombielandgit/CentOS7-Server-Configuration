@@ -65,3 +65,8 @@
   * [12.7. Nagios](12. 系统监控/12.7. Nagios.md)
   * [12.8. Monitorix](12. 系统监控/12.8. Monitorix.md)
 * [13. 语言开发环境](13. 语言开发环境/Introduction.md)
+  * [13.1. Ruby](13. 语言开发环境/13.1. Ruby.md)
+  * [13.2. JavaScript](13. 语言开发环境/13.2. JavaScript.md)
+  * [13.3. PHP](13. 语言开发环境/13.3. PHP.md)
+  * [13.4. Python](13. 语言开发环境/13.4. Python.md)
+  * [13.5. Java](13. 语言开发环境/13.5. Java.md)
