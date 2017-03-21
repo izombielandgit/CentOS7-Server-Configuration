@@ -2,8 +2,6 @@
 
 CentOS7可以使用[KVM](https://www.linux-kvm.org/page/Main_Page)，[oVirt](https://www.ovirt.org/)，[Xen](https://www.xenproject.org/)，[Docker](https://www.docker.com/)，[Kubernetes](https://kubernetes.io/)，[VirtualBox](https://www.virtualbox.org/)，[VMware](https://www.vmware.com/cn.html)等虚拟化系统。
 
-个人习惯KVM，先简单把KVM写了。
-
 * [2.1. KVM](../2. 虚拟化/2.1. KVM.html)
   * [2.1.1. 安装KVM](../2. 虚拟化/2.1. KVM.html#211-安装kvm)
   * [2.1.2. 创建一个虚拟机](../2. 虚拟化/2.1. KVM.html#212-创建一个虚拟机)
