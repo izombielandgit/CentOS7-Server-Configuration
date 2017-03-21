@@ -16,3 +16,7 @@ CentOS7可以使用[KVM](https://www.linux-kvm.org/page/Main_Page)，[oVirt](htt
      * [2.1.8.1. CentOS客户端](../2. 虚拟化/2.1. KVM.html#2181-centos客户端)
      * [2.1.8.2. Windows客户端](../2. 虚拟化/2.1. KVM.html#2182-windows客户端)
   * [2.1.9. KVM嵌套](../2. 虚拟化/2.1. KVM.html#219-kvm嵌套)
+* [2.2. oVirt](../2. 虚拟化/2.2. oVirt.html)
+* [2.3. Xen](../2. 虚拟化/2.3. Xen.html)
+* [2.4. Docker](../2. 虚拟化/2.4. Docker.html)
+* [2.5. Kubernetes](../2. 虚拟化/2.5. Kubernetes.html)
