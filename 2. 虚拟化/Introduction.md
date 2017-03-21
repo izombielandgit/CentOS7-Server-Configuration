@@ -21,5 +21,7 @@ CentOS7可以使用[KVM](https://www.linux-kvm.org/page/Main_Page)，[oVirt](htt
   * [2.2.4. 添加存储](../2. 虚拟化/2.2. oVirt.html#224-添加存储)
   * [2.2.5. 创建虚拟机](../2. 虚拟化/2.2. oVirt.html#225-创建虚拟机)
 * [2.3. Xen](../2. 虚拟化/2.3. Xen.html)
+  * [2.3.1. 安装Xen](../2. 虚拟化/2.3. Xen.html#231-安装xen)
+  * [2.3.2. 创建虚拟机](../2. 虚拟化/2.3. Xen.html#232-创建虚拟机)
 * [2.4. Docker](../2. 虚拟化/2.4. Docker.html)
 * [2.5. Kubernetes](../2. 虚拟化/2.5. Kubernetes.html)
