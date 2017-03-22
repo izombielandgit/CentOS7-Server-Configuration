@@ -21,18 +21,6 @@
 
 WebSocket 示例应用程序来自这里
 
-#### 8.1.3.3. Pure-FTPd + Clamav
-
-先[安装Clamav](https://www.server-world.info/en/note?os=CentOS_7&p=clamav)
-
-### 9.1.3. Postfix + Clamav + Amavisd
-
-[安装Clamav](https://www.server-world.info/en/note?os=CentOS_7&p=clamav)。
-
-### 10.2.5. Squid + SquidClamav
-
-[安装Clamav](https://www.server-world.info/en/note?os=CentOS_7&p=clamav)。
-
 
 
 
