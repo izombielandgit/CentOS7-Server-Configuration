@@ -31,3 +31,7 @@ CentOS7可以使用[KVM](https://www.linux-kvm.org/page/Main_Page)，[oVirt](htt
   * [2.4.5. 使用Docker-Registry](../2. 虚拟化/2.4. Docker.html#245-使用docker-registry)
   * [2.4.6. 持久化存储](../2. 虚拟化/2.4. Docker.html#246-持久化存储)
 * [2.5. Kubernetes](../2. 虚拟化/2.5. Kubernetes.html)
+  * [2.5.1. 配置管理节点](../2. 虚拟化/2.5. Kubernetes.html#251-配置管理节点)
+  * [2.5.2. 配置容器节点](../2. 虚拟化/2.5. Kubernetes.html#252-配置容器节点)
+  * [2.5.3. 创建Pod](../2. 虚拟化/2.5. Kubernetes.html#253-创建pod)
+  * [2.5.4. 持久化存储](../2. 虚拟化/2.5. Kubernetes.html#254-持久化存储)
