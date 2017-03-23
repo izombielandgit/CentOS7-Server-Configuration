@@ -13,3 +13,4 @@
   * [9.5.1. SquirrelMail](../9. 邮件服务器/9.5. WebMail.html#951-squirrelmail)
   * [9.5.2. RainLoop](../9. 邮件服务器/9.5. WebMail.html#952-rainloop)
   * [9.5.3. RoundCube](../9. 邮件服务器/9.5. WebMail.html#953-roundcube)
+* [9.6. iRedMail](../9. 邮件服务器/9.6. iRedMail.html)
