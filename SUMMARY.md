@@ -46,6 +46,7 @@
 * [8. 文件服务器](8. 文件服务器/Introduction.md)
   * [8.1. FTP](8. 文件服务器/8.1. FTP.md)
   * [8.2. Samba](8. 文件服务器/8.2. Samba.md)
+  * [8.3. ownCloud](8. 文件服务器/8.3. ownCloud.md)
 * [9. 邮件服务器](9. 邮件服务器/Introduction.md)
   * [9.1. 安装Postfix](9. 邮件服务器/9.1. 安装Postfix.md)
   * [9.2. 安装Dovecot](9. 邮件服务器/9.2. 安装Dovecot.md)
