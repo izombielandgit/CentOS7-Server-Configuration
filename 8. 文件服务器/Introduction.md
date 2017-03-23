@@ -20,3 +20,4 @@
   * [8.2.2. 受限访问的共享文件夹](../8. 文件服务器/8.2. Samba.html#822-受限访问的共享文件夹)
   * [8.2.3. Samba Winbind](../8. 文件服务器/8.2. Samba.html#823-samba-winbind)
   * [8.2.4. Samba AD DC](../8. 文件服务器/8.2. Samba.html#824-samba-ad-dc)
+* [8.3. ownCloud](../8. 文件服务器/8.3. ownCloud.html)
