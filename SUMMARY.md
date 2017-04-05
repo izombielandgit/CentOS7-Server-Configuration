@@ -71,6 +71,7 @@
   * [12.6. Cacti](12. 系统监控/12.6. Cacti.md)
   * [12.7. Nagios](12. 系统监控/12.7. Nagios.md)
   * [12.8. Monitorix](12. 系统监控/12.8. Monitorix.md)
+  * [12.9. psacct](12. 系统监控/12.9. psacct.md)
 * [13. 语言开发环境](13. 语言开发环境/Introduction.md)
   * [13.1. Ruby](13. 语言开发环境/13.1. Ruby.md)
   * [13.2. JavaScript](13. 语言开发环境/13.2. JavaScript.md)
