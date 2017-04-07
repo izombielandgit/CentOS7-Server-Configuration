@@ -84,6 +84,7 @@
   * [14.1. OpenStack](14. 云计算/14.1. OpenStack.md)
 * [15. 认证服务器](15. 认证服务器/Introduction.md)
   * [15.1. FreeRADIUS](15. 认证服务器/15.1. FreeRADIUS.md)
+  * [15.2. privacyIDEA](15. 认证服务器/15.2. privacyIDEA.md)
 * [附0. 一些系统配置](附0. 一些系统配置/Introduction.md)
   * [附0.1. 本地化设置](附0. 一些系统配置/附0.1. 本地化设置.md)
   * [附0.2. 密码相关设置](附0. 一些系统配置/附0.2. 密码相关设置.md)
