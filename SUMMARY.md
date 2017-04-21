@@ -61,6 +61,7 @@
   * [10.4. PXE](10. 网络服务/10.4. PXE.md)
   * [10.5. OpenVPN](10. 网络服务/10.5. OpenVPN.md)
   * [10.6. PPTP](10. 网络服务/10.6. PPTP.md)
+  * [10.7. L2TP IPSec](10. 网络服务/10.7. L2TP IPSec.md)
 * [11. 负载均衡](11. 负载均衡/Introduction.md)
   * [11.1. HAProxy](11. 负载均衡/11.1. HAProxy.md)
   * [11.2. Pen](11. 负载均衡/11.2. Pen.md)
