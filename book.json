@@ -1,7 +1,17 @@
 {
     "plugins": [
-        "anchors"
+        "anchors",
+        "-highlight",
+        "prism",
+        "-lunr",
+        "search-jieba",
+        "expandable-chapters"
     ],
     "pluginsConfig": {
+        "prism": {
+            "css": [
+                "prismjs/themes/prism-solarizedlight.css"
+            ]
+        }
     }
 }
