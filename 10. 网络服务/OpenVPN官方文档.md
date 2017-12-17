@@ -1,39 +1,75 @@
-## OpenVPN官方文档
-
-
-
-### 10.5.3. OpenVPN官方文档
+# OpenVPN官方文档
 
 上面章节大致介绍了通常的安装、配置方法，这里再介绍一下可能有用的（关于OpenVPN，不和CentOS相关），参考自[软件指南针](http://www.softown.cn/summary/openvpn-howto)翻译的[官方文档](https://openvpn.net/index.php/open-source/documentation/howto.html)。也可查看[OpenVPN相关文章](https://openvpn.net/index.php/open-source/articles.html)或[OpenVPN wiki](https://community.openvpn.net/openvpn)。
 
-#### 10.5.3.1. 安装OpenVPN
+## 1. 安装OpenVPN
 
 [英文原文](http://openvpn.net/index.php/open-source/documentation/howto.html#install)
 
 可以[在这里](https://openvpn.net/index.php/open-source/downloads.html)下载OpenVPN源代码和Windows安装程序。最近的版本(2.2及以后版本)也发布了Debian和RPM包(.deb和.rpm)。详情查看[OpenVPN wiki](https://community.openvpn.net/openvpn)。出于安全考虑，建议下载完毕后检查一下文件的[签名信息](https://openvpn.net/index.php/open-source/documentation/sig.html)。OpenVPN可执行文件提供了服务器和客户端的所有功能，因此服务器和客户端都需要安装OpenVPN的可执行文件。
 
-**Linux版安装事项（使用RPM包管理工具）**
+**Linux安装事项（使用RPM包管理工具）**
+
+如果你使用的Linux发行版支持RPM包管理工具，例如：RedHat、CentOS、Fedora、SUSE等。最好使用这种方法来安装。最简单的方法就是找到一个可以在当前Linux发行版上使用的二进制RPM文件。你也可以使用如下命令创建(build)你自己的二进制RPM文件：
 
 ```
 rpmbuild -tb openvpn-[version].tar.gz
 ```
 
+有了`.rpm`格式的文件，你就可以使用如下常规命令来安装它。
 
+```
+rpm -ivh openvpn-[details].rpm
+```
 
+或者升级现有的OpenVPN版本：
 
+```
+rpm -Uvh openvpn-[details].rpm
+```
 
+安装OpenVPN的RPM包，需要如下这些依赖软件包：
 
+* openssl （SSL协议及相关内容的开源实现）
+* lzo （无损压缩算法）
+* pam （身份验证模块）
 
+此外，如果自己创建(build)二进制RPM包，需要如下几个依赖：
 
+* openssl-devel
+* lzo-devel
+* pam-devel
 
+可以查看[openvpn.spec](https://openvpn.net/index.php/open-source/documentation/install.html#rpm)文件，该文件包含了在RedHat Linux 9上创建RPM包，或者在减少依赖的情况下创建RPM包的更多信息。
 
+**Linux安装事项（非RPM）**
 
+如果你使用的系统是Debian、Gentoo或其他不基于RPM的Linux发行版，你可以使用当前发行版指定的软件包管理机制，例如Debian的apt-get或者Gentoo的emerge。
 
+```
+apt-get install openvpn  # 使用apt-get安装OpenVPN
+emerge openvpn  # 使用emerge安装OpenVPN
+```
 
+也可以使用常规的`./configure`方法在安装Linux上安装OpenVPN。首先，解压`.tar.gz`文件：
 
+```
+tar xfz openvpn-[version].tar.gz
+```
 
+然后跳转到OpenVPN的顶级目录（`top-level directory`实际上就是OpenVPN解压后的目录），输入：
 
+```
+./configure
+make
+make install
+```
 
+通过`./configure`方式进行OpenVPN的编译安装之前，仍然需要先安装OpenVPN的依赖软件包openssl、lzo、pam。详细信息参考[Linux版OpenVPN安装、配置教程]()。
+
+**Windows安装事项**
+
+对Windows系统而言，可以直接在下载exe格式的可执行文件来安装OpenVPN。OpenVPN只能够在Windows XP及以上版本的系统中运行。还要注意，必须具备管理员权限才能够安装运行OpenVPN（该限制是Windows自身造成的，而不是OpenVPN）。安装OpenVPN之后，你可以用Windows后台服务的方式启动OpenVPN来绕过该限制；在这种情况下，非管理员用户也能够正常访问VPN。你可以点击查看[关于OpenVPN + Windows权限问题的更多讨论](http://openvpn.se/files/howto/openvpn-howto_run_openvpn_as_nonadmin.html)。
 
 
 
