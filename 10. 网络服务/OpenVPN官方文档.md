@@ -4,7 +4,7 @@
 
 ## 1. 安装OpenVPN
 
-[英文原文](http://openvpn.net/index.php/open-source/documentation/howto.html#install)
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#install)
 
 可以[在这里](https://openvpn.net/index.php/open-source/downloads.html)下载OpenVPN源代码和Windows安装程序。最近的版本(2.2及以后版本)也发布了Debian和RPM包(.deb和.rpm)。详情查看[OpenVPN wiki](https://community.openvpn.net/openvpn)。出于安全考虑，建议下载完毕后检查一下文件的[签名信息](https://openvpn.net/index.php/open-source/documentation/sig.html)。OpenVPN可执行文件提供了服务器和客户端的所有功能，因此服务器和客户端都需要安装OpenVPN的可执行文件。
 
@@ -16,7 +16,7 @@
 rpmbuild -tb openvpn-[version].tar.gz
 ```
 
-有了`.rpm`格式的文件，你就可以使用如下常规命令来安装它。
+有了`.rpm`格式的文件，就可以使用如下常规命令来安装它。
 
 ```
 rpm -ivh openvpn-[details].rpm
@@ -70,6 +70,95 @@ make install
 **Windows安装事项**
 
 对Windows系统而言，可以直接在下载exe格式的可执行文件来安装OpenVPN。OpenVPN只能够在Windows XP及以上版本的系统中运行。还要注意，必须具备管理员权限才能够安装运行OpenVPN（该限制是Windows自身造成的，而不是OpenVPN）。安装OpenVPN之后，你可以用Windows后台服务的方式启动OpenVPN来绕过该限制；在这种情况下，非管理员用户也能够正常访问VPN。你可以点击查看[关于OpenVPN + Windows权限问题的更多讨论](http://openvpn.se/files/howto/openvpn-howto_run_openvpn_as_nonadmin.html)。
+
+官方版的OpenVPN Windows安装程序自带[OpenVPN GUI](https://community.openvpn.net/openvpn/wiki/OpenVPN-GUI)，OpenVPN GUI允许用户通过一个托盘程序来管理OpenVPN连接。也可以使用其他的[GUI程序](https://community.openvpn.net/openvpn/wiki/OpenVPN-GUI)。
+
+安装OpenVPN之后，OpenVPN将会与扩展名为`.ovpn`的文件进行关联。想要运行OpenVPN，可以：
+
+* 右键点击OpenVPN配置文件`.ovpn`，在弹出的关联菜单中选择【Start OpenVPN on this configuration file】即可使用该配置文件启动OpenVPN。运行OpenVPN后，可以使用快捷键`F4`来退出程序。
+* 以命令提示符的方式运行OpenVPN，例如：`openvpn myconfig.ovpn`。运行之后，同样可以使用快捷键`F4`来退出VPN。
+* 在OpenVPN安装路径`/config`目录（一般默认为`C:\Program Files\OpenVPN\config`）中放置一个或多个`.ovpn`格式的配置文件，然后启动名为OpenVPN Service的Windows服务。你可以点击【开始】->【控制面板】->【管理工具】->【服务】，从而进入Windows服务管理界面。
+
+**Mac OS X安装事项**
+
+Angelo Laub和Dirk Theisen已经开发出了[OpenVPN GUI for OS X](https://tunnelblick.net/)。
+
+**其他操作系统**
+
+通常情况下，其他操作系统也可以使用`./configure`方法来安装OpenVPN，或者也可以自行查找一个适用于你的操作系统/发行版的OpenVPN接口或安装包。
+
+```
+./configure
+make
+make install
+```
+
+更多安装说明参阅[这里](https://openvpn.net/index.php/open-source/documentation/install.html?start=1)。
+
+## 2. 选择使用路由还是桥接
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#vpntype)
+
+查看“路由 VS. 以太网桥接”的[FAQ](https://community.openvpn.net/openvpn/wiki/FAQ#bridge1)。也可以查看OpenVPN[以太网桥接](https://openvpn.net/index.php/open-source/documentation/miscellaneous/76-ethernet-bridging.html)页面以了解关于桥接的更多事项和细节。
+
+总的来说，对于大多数人而言，“路由模式”可能是更好的选择，因为它可以比“桥接模式”更高效更简单地搭建一个VPN（基于OpenVPN自带的配置）。路由模式还提供了更强大的对指定客户端的访问权限进行控制的能力。
+
+推荐使用“路由模式”，除非你需要用到只有“桥接模式”才具备的某些功能特性，例如：
+
+* VPN需要处理非IP协议，例如IPX。
+* 在VPN网络中运行的应用程序需要用到网络广播(network broadcasts)，例如：局域网游戏。
+* 你想要在没有Samba或WINS服务器的情况下，能够通过VPN浏览Windows文件共享。
+
+## 3. 设置私有子网
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#numbering)
+
+创建一个VPN需要借助私有子网将不同地方的成员连接在一起。
+
+互联网号码分配机构(IANA)专为私有网络保留了以下三块IP地址空间(制定于RFC 1918规范中)：
+
+* 10.0.0.0-10.255.255.255(10/8 prefix)
+* 172.16.0.0-172.31.255.255(172.16/12 prefix)
+* 192.168.0.0-192.168.255.255(192.168/16 prefix)
+
+在VPN配置中使用这些地址。对选择IP地址并将IP地址冲突或子网冲突的发生概率降到最低而言，这一点非常重要。以下是需要避免的冲突类型：
+
+* VPN中不同的网络场所使用相同的局域网子网编号所产生的冲突。
+* 远程访问连接自身使用的私有子网与VPN的私有子网发生冲突。
+
+简而言之，处于不同局域网的客户端和客户端之间，它们自身所在的局域网IP段不要发生冲突；客户端自身所在的局域网IP段也不要和VPN使用的局域网IP段发生冲突。
+
+举个例子，假设你使用了流行的`192.168.0.0/24`作为你的VPN子网。现在，你尝试在一个网吧内连接VPN，该网吧的WIFI局域网使用了相同的子网。这将产生一个路由冲突，因为你的计算机不知道`192.168.0.1`是指本地WIFI的网关，还是指VPN上的相同地址。
+
+再举个例子，假设你想通过VPN将多个网络场所连接在一起，但是每个网络场所都使用了`192.168.0.0/24`作为自己的局域网子网。如果你不添加一个复杂的NAT翻译层，它们将无法工作。因为这些网络场所没有唯一的子网来标识它们自己，VPN不知道如何在多个网络场所之间路由数据包。
+
+最佳的解决方案是避免使用`10.0.0.0/24`或者`192.168.0.0/24`作为VPN的私有子网。相反，你应该使用一些在你可能连接VPN的场所（例如咖啡厅、酒店、机场）不太可能使用的私有子网。最佳的候选者应该是在浩瀚的`10.0.0.0/8`网络块中间选择一个子网（例如：`10.66.77.0/24`）。
+
+总的来说，为了避免跨多个网络场所的IP编号冲突，请始终使用唯一的局域网子网编号。
+
+笔者注：在某些情况下使用相同的IP网段也是可以使用的，不过最好是尽可能避免冲突。
+
+## 4. 创建证书
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#pki)
+
+创建过程略。
+
+证书相关文件
+
+|文件名|谁需要|作用|是否需保密|
+|-|-|-|-|
+|ca.crt|服务器 + 所有客户端|根CA证书|NO|
+|ca.key|密钥签名机|根CA密钥|YES|
+|dh{n}.pem|服务器|迪菲·赫尔曼参数|NO|
+|server.crt|服务器|服务器证书|NO|
+|server.key|服务器|服务器密钥|YES|
+|client1.crt|client1|Client1证书|NO|
+|client1.key|client1|Client1密钥|YES|
+|client2.crt|client2|Client2证书|NO|
+|client2.key|client2|Client2密钥|YES|
+
+
 
 
 
