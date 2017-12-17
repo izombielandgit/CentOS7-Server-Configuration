@@ -531,31 +531,44 @@ OpenVPN服务器将向其他正在连接的客户端宣告`client2`子网的存�
 * 在其他终端上添加路由表。（服务器所在网段的）Windows如下添加：`route add 192.168.4.0 mask 255.255.255.0 10.66.0.5`，（客户端所在网段的）Windows如下添加：`route add 10.66.0.0 mask 255.255.255.0 192.168.4.10`，如果添加永久路由，使用`-p`参数。其它系统的自行网上找资料。
 * 可以综合参考以上方式，来控制加入此互访网络的终端。
 
+## 10. 推送DHCP选项到客户端
 
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#dhcp)
 
+OpenVPN服务器能够推送诸如DNS、WINS服务器地址等DHCP选项参数到客户端（这里是一些值得注意的[附加说明](https://community.openvpn.net/openvpn/wiki/FAQ#dhcpcaveats)）。Windows客户端原生就能够接受被推送来的DHCP选项参数，但非Windows系统的客户端需要使用客户端的up脚本才能接受它们，`up`脚本能够解析`foreign_option_n`环境变量列表。请进入[手册页面](https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html)或者[OpenVPN用户的邮件列表档案](https://openvpn.net/index.php/open-source/documentation/miscellaneous/61-mailing-lists.html)查看非Windows系统的`foreign_option_n`文档和脚本示例。
 
+举个例子，假如你希望正在连接的客户端使用一个内部的DNS服务器`10.66.0.4`或`10.66.0.5`，和一个WINS服务器`10.66.0.8`，在OpenVPN服务器配置中添加下列语句：
 
+```
+push "dhcp-option DNS 10.66.0.4"
+push "dhcp-option DNS 10.66.0.5"
+push "dhcp-option WINS 10.66.0.8"
+```
 
+想要在Windows上测试该功能，在客户端连接OpenVPN服务器后，在命令提示符中运行如下命令：
 
+```
+ipconfig -all
+```
 
+其中，“TAP-Windows”部分应该显示服务器推送过来的DHCP选项参数。
 
+## 11. 为指定客户端配置规则和访问策略
 
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#policy)
 
+假设，创建了一个供企业使用的VPN，想要分别为3种不同级别的用户单独设置访问策略：
 
+* 系统管理员 -- 允许访问网络内的所有终端
+* 普通职工 -- 只允许访问Samba/Email服务器
+* 承包商 -- 只允许访问特定的服务器
 
+所要采取的基本方法是：
 
+* 给不同级别的用户划分不同的虚拟IP地址范围
+* 通过设置锁定客户端虚拟IP地址的防火墙规则来控制对计算机的访问。
 
-
-
-
-
-
-
-
-
-
-
-
+本例假设有大量的普通职工，只有1个系统管理员、2个承包商。IP配置方案将会把所有的普通职工放入一个IP地址池中，然后为系统管理员和承包商分配固定的IP地址。
 
 
 
