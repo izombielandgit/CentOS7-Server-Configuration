@@ -160,7 +160,7 @@ make install
 
 关于证书、密钥安全性的问题可查看原文。
 
-## 4. 创建配置文件
+## 5. 创建配置文件
 
 [英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#config)
 
@@ -204,11 +204,11 @@ make install
 * 下一步，编辑`remote`指令，将其指向OpenVPN服务器的主机名/IP地址和端口号（如果OpenVPN服务器在防火墙或NAT网关之后的单网卡机器上运行，请使用网关的公网IP地址，和你在网关中配置的转发到OpenVPN服务器的端口号）。
 * 最后，确保客户端配置文件和用于服务器配置的指令保持一致。主要检查dev（dev或tap）和proto（udp或tcp）指令是否一致。此外，如果服务器和客户端配置文件都使用了`comp-lzo`和`fragment`指令，也需要保持一致。
 
-## 5. 启动VPN并测试
-
-**启动服务器**
+## 6. 启动VPN并测试
 
 [英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#start)
+
+**启动服务器**
 
 首先，确保OpenVPN服务器能够正常连接网络。这意味着：
 
@@ -302,32 +302,169 @@ TLS: Initial packet from x.x.x.x:x, sid=xxxxxxxx xxxxxxxx
 
 想了解更多额外的故障排除信息，请查看[FAQ](https://community.openvpn.net/openvpn/wiki/FAQ)。
 
+## 7. 系统启动时自动运行
 
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#startup)
 
+关于这个问题并没有所谓的标准答案，也就是说大多数系统都有不同的方式来配置在系统启动时自动运行后台进程/服务。想要默认就具备该功能设置的最佳方式就是以软件包的形式安装OpenVPN，例如通过Linux系统的RPM、DEB或者使用Windows安装程序。
 
+**Linux系统**
 
+如果在Linux上通过RPM或DEB软件包来安装OpenVPN，安装程序将创建一个`initscript`。执行该脚本，`initscript`将会扫描`/etc/openvpn`目录下`.conf`格式的配置文件，如果能够找到，将会为每个文件分别启动一个独立的OpenVPN后台进程。
 
+**Windows系统**
 
+Windows安装程序将会建立一个服务器包装器(Service Wrapper)，不过默认情况下其处于关闭状态。如果想激活它，请进入【控制面板】->【管理工具】->【服务】，然后右键点击"OpenVPN Service"，在弹出的关联菜单中单击【属性】，并将属性面板中的"启动类型"设为"自动"。OpenVPN服务将会在下次重启系统时自动运行。
 
+启动后，OpenVPN服务包装器将会扫描OpenVPN安装路径`/config`文件夹下`.ovpn`格式的配置文件，然后为每个文件启动一个单独的OpenVPN进程。
 
+## 8. 控制运行中的OpenVPN进程
 
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#control)
 
+**运行于Linux/BSD/Unix**
 
+* SIGUSR1  # 有条件的重新启动，设计用于没有root权限的重启
+* SIGHUP  # 硬重启
+* SIGUSR2  # 输出连接统计信息到日志文件或syslog中
+* SIGTERM, SIGINT  # 退出
 
+使用`writepid`指令将OpenVPN的后台进程PID写入到一个文件中，这样你就知道该向哪里发送信号（如果以`initscript`方式启动OpenVPN，该脚本可能已经通过openvpn命令行中的指令--writepid达到了该目的）。
 
+**以GUI形式在Windows上运行**
 
+请查看[OpenVPN GUI页面](https://community.openvpn.net/openvpn/wiki/OpenVPN-GUI)。
 
+**运行于Windows命令提示符窗口**
 
+在Windows中，可以通过右击一个OpenVPN配置文件（.ovpn文件），然后选择“Start OpenVPN on this config file”来启动OpenVPN。
 
+一旦以这种方式运行，你可以使用如下几种按键命令：
 
+* `F1`  # 有条件的重启(无需关闭/重新打开TAP适配器)
+* `F2`  # 显示连接统计信息
+* `F3`  # 硬重启
+* `F4`  # 退出
 
+**以Windows服务方式运行**
 
+在Windows中，当OpenVPN以服务方式启动时，控制方式是：
 
-#### 10.5.3.1 服务器与客户端子网的互相访问
+* 通过服务控制管理器（控制面板->管理工具->服务），其中提供了启动/终止操作。
+* 通过管理接口（详情参考下面）。
 
-假设服务器网段为`192.168.0.0/24`，服务器IP地址为`192.168.0.5`，客户端网段为`192.168.111.0/24`，客户端IP地址为`192.168.111.10`（不能和服务器网段相同，如果有多个客户端，每个客户端网段必须是不同用户名和不同的网段）。
+**修改使用中的OpenVPN配置**
 
-在服务器和客户端都开启IP和TUN/TAP转发（按照上一节安装好服务器好后已经开启，不过还需要设置防火墙）：
+虽然大多数配置更改必须重启服务器才能生效，但仍然有两个指令可以用于文件动态更新，并且能够直接生效而无需重启服务器进程。
+
+* `client-config-dir`  # 该指令设置一个客户端配置文件夹，OpenVPN服务器将会在每个外部连接到来时扫描该目录中的文件，用以查找为当前连接指定的客户端配置文件（详情查看[手册页面](https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html)）。该目录中的文件可以随时更新，而无需重启服务器。请注意，该目录中发生的更改只对新的连接起作用，不包括之前已经存在的连接。如果你想通过指定客户端的配置文件更改来直接影响当前正在连接的客户端（或者该连接已经断开，但它在服务器中的实例对象并没有超时），你可以通过管理接口来杀掉该客户端的实例对象（详见下方描述）。这将导致客户端重新连接并使用新的`client-config-dir`文件。
+* `crl-verify`  # 该指令指定一个证书撤销列表(CRL)文件，相关描述请参考后面的撤销证书部分。该CRL文件能够在运行中被修改，并且修改可以直接对新的连接或那些正在重新建立SSL/TLS通道的现有连接（默认每小时重新建立一次通道）生效。如果你想杀掉一个证书已经添加到CRL中，但目前已连接的客户端，请使用管理接口（详见下方描述）。
+
+**状态信息文件**
+
+默认的server.conf文件有这样一行：
+
+```
+status openvpn-status.log
+```
+
+OpenVPN将每分钟输出一次当前客户端连接列表到文件openvpn-status.log中。
+
+**使用管理接口**
+
+[OpenVPN管理接口](https://openvpn.net/index.php/open-source/documentation/miscellaneous/79-management-interface.html)可以对正在运行的OpenVPN进程进行大量的控制操作。
+
+你可以通过远程登录管理接口的端口来直接使用管理接口，或者使用连接到管理接口的[OpenVPN GUI](https://community.openvpn.net/openvpn/wiki/OpenVPN-GUI)来间接使用管理接口。
+
+要启用一个服务器或客户端的管理接口，在配置文件中添加如下指令：
+
+```
+management localhost 7505
+```
+
+这将告诉OpenVPN专为管理接口客户端监听TCP端口7505（端口7505是随意的选择，也可以使用其他任何闲置的端口）。
+
+OpenVPN运行后，你可以使用`telnet`客户端连接管理接口。例如：
+
+```
+ai:~ # telnet localhost 7505
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+>INFO:OpenVPN Management Interface Version 1 -- type 'help' for more info
+help
+Management Interface for OpenVPN 2.0_rc14 i686-suse-linux [SSL] [LZO] [EPOLL] built on Feb 15 2005
+Commands:
+echo [on|off] [N|all]  : Like log, but only show messages in echo buffer.
+exit|quit              : Close management session.
+help                   : Print this message.
+hold [on|off|release]  : Set/show hold flag to on/off state, or
+                         release current hold and start tunnel.
+kill cn                : Kill the client instance(s) having common name cn.
+kill IP:port           : Kill the client instance connecting from IP:port.
+log [on|off] [N|all]   : Turn on/off realtime log display
+                         + show last N lines or 'all' for entire history.
+mute [n]               : Set log mute level to n, or show level if n is absent.
+net                    : (Windows only) Show network info and routing table.
+password type p        : Enter password p for a queried OpenVPN password.
+signal s               : Send signal s to daemon,
+                         s = SIGHUP|SIGTERM|SIGUSR1|SIGUSR2.
+state [on|off] [N|all] : Like log, but show state history.
+status [n]             : Show current daemon status info using format #n.
+test n                 : Produce n lines of output for testing/debugging.
+username type u        : Enter username u for a queried OpenVPN username.
+verb [n]               : Set log verbosity level to n, or show if n is absent.
+version                : Show current version number.
+END
+exit
+Connection closed by foreign host.
+ai:~ #
+```
+
+## 9. 服务器或客户端子网中的其他计算机互相访问
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#scope)
+
+VPN既然能够让服务器和客户端之间具备点对点的通信能力，那么扩展VPN的作用范围，从而使客户端能够访问服务器所在网络的其他计算机，而不仅仅是服务器自己，也是可能办得到的。
+
+**包含基于桥接模式的VPN服务器端的多台计算机(dev tap)**
+
+使用[以太网桥接](https://openvpn.net/index.php/open-source/documentation/miscellaneous/76-ethernet-bridging.html)的好处之一就是无需进行任何额外的配置就可以实现该目的。
+
+**包含基于桥接模式的VPN客户端的多台计算机(dev tap)**
+
+这需要更加复杂的设置（实际操作可能并不复杂，但详细解释就比较麻烦）：
+
+* 必须将客户端的TAP接口与连接局域网的网卡进行桥接。
+* 必须手动设置客户端TAP接口的IP/子网掩码。
+* 必须配置客户端计算机使用桥接子网中的IP/子网掩码，这可能要通过[查询OpenVPN服务器的DHCP服务器](https://openvpn.net/index.php/open-source/documentation/install.html?start=1)来完成。
+
+**包含基于路由模式的VPN服务器端的多台计算机(dev tun)**
+
+假设服务器端所在局域网的网段为`10.66.0.0/24`，服务器IP地址为`10.66.0.5`，VPN IP地址池使用`10.8.0.0/24`作为OpenVPN服务器配置文件中`server`指令的传递参数。
+
+首先，你必须声明，对于VPN客户端而言，`10.66.0.0/24`网段是可以通过VPN进行访问的。你可以通过在服务器端配置文件中简单地配置如下指令来实现该目的：
+
+```
+push "route 10.66.0.0 255.255.255.0"
+```
+
+下一步，必须在服务器端的局域网网关创建一个路由，从而将VPN的客户端网段`10.8.0.0/24`路由到OpenVPN服务器（只有OpenVPN服务器和局域网网关不在同一计算机才需要这样做）。
+
+另外，确保已经在OpenVPN服务器所在计算机上启用了[IP](https://community.openvpn.net/openvpn/wiki/FAQ#ip-forward)和[TUN/TAP](https://community.openvpn.net/openvpn/wiki/FAQ#firewall)转发（参考下面内容）。
+
+**包含基于路由模式的VPN客户端的多台计算机(dev tun)**
+
+在典型的远程访问方案中，客户端都是作为单一的计算机连接到VPN。但是，假设客户端计算机是本地局域网的网关（例如一个家庭办公室），并且你想要让客户端局域网中的每台计算机都能够通过VPN。
+
+假设你的客户端局域网网段为`192.168.4.0/24`，客户端IP地址为`192.168.4.10`，VPN客户端使用的证书的Common Name为`client2`。目标是建立一个客户端局域网的计算机和服务器局域网的计算机都能够通过VPN进行相互通讯。
+
+在创建之前，下面是一些基本的前提条件：
+
+* 客户端局域网网段（在我们的例子中是`192.168.4.0/24`）不能和VPN的服务器或任意客户端使用相同的网段。每一个以路由方式加入到VPN的子网网段都必须是唯一的。
+* 该客户端的证书的Common Name必须是唯一的（在我们的例子中是`client2`），并且OpenVPN服务器配置文件不能使用`duplicate-cn`标记。
+
+首先，确保该客户端所在计算机已经启用了IP和TUN/TAP转发。
 
 各操作系统[开启IP和TUN/TAP转发的设置](https://community.openvpn.net/openvpn/wiki/265-how-do-i-enable-ip-forwarding)：
 
@@ -343,7 +480,7 @@ TLS: Initial packet from x.x.x.x:x, sid=xxxxxxxx xxxxxxxx
 
 `echo 1 > /proc/sys/net/ipv4/ip_forward`
 
-防火墙设置：iptables添加`-A FORWARD -d 192.168.111.0/24 -j ACCEPT`；firewalld运行`firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s 192.168.111.0/24`
+防火墙设置：iptables添加`-A FORWARD -d 192.168.4.0/24 -j ACCEPT`；firewalld运行`firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s 192.168.4.0/24`
 
 **OS X**：
 
@@ -351,45 +488,87 @@ TLS: Initial packet from x.x.x.x:x, sid=xxxxxxxx xxxxxxxx
 
 未测试是否需要配置防火墙
 
-开启转发后对服务器进行配置：
+下一步，需要在服务器端做一些必要的配置更改。如果当前的服务器配置文件没有引用一个客户端配置目录，添加一个：
 
 ```
-# 下面的注释只介绍作用
-push "route 192.168.0.0 255.255.255.0"  # 客户端可访问服务器所在的192.168.0.0/24网段
-client-config-dir ccd  # 可以对每个客户端进行单独的配置
-```
-
-在`ccd`目录下，以客户端用户名为名称创建文件，写入以下内容：
-
-```
-iroute 192.168.111.0 255.255.255.0
-```
-
-子网网段`192.168.111.0/24`路由到该用户客户端。
-
-然后在**服务器配置文件**加入一行：
-
-```
-push "route 192.168.0.0 255.255.255.0"
 client-config-dir ccd
-route 192.168.111.0 255.255.255.0  # 服务端网段可访问客户端网段
+```
+
+在上面的指令中，`ccd`是一个已经在OpenVPN服务器运行的默认目录中预先创建好的文件夹的名称。在Linux中，运行的默认目录往往是`/etc/openvpn`；在Windows中，其通常是OpenVPN安装路径`/config`。当一个新的客户端连接到OpenVPN服务器，后台进程将会检查配置目录（这里是`ccd`）中是否存在一个与连接的客户端的Common Name匹配的文件（这里是`client2`）。如果找到了匹配的文件，OpenVPN将会读取该文件，作为附加的配置文件指令来处理，并应用于该名称的客户端。
+
+下一步就是在`ccd`目录中创建一个名为`client2`的文件。该文件应该包含如下内容：
+
+```
+iroute 192.168.4.0 255.255.255.0
+```
+
+这将告诉OpenVPN服务器：子网网段`192.168.4.0/24`应该被路由到`client2`。
+
+接着，在OpenVPN服务器配置文件（**不是**`ccd/client2`文件）中添加如下指令：
+
+```
+route 192.168.4.0 255.255.255.0
 ```
 
 `route`语句控制从系统内核到OpenVPN服务器的路由，`iroute`控制从OpenVPN服务器到远程客户端的路由（不是太懂，照做就可以了）。
 
-**客户端网段之间的互相访问**
-
-如果允许其他客户端访问此客户端的`192.168.111.0/24`网段，在服务器配置文件中加入：
+下一步，请考虑是否允许`client2`所在的子网（192.168.4.0/24）与OpenVPN服务器的其他客户端进行相互通讯。如果允许，在服务器配置文件中添加如下语句（笔者注：应该可以在`ccd`对应用户名加入，可以更精确控制使用范围）：
 
 ```
 client-to-client
-push "route 192.168.111.0 255.255.255.0"
+push "route 192.168.4.0 255.255.255.0"
 ```
 
-在其他终端**添加路由**，几种方式：
+OpenVPN服务器将向其他正在连接的客户端宣告`client2`子网的存在。
 
-一、在网关添加路由。如在`192.168.0.0/24`网关处添加一条访问`192.168.111.0/24`时以`192.168.0.5`为网关，在`192.168.111.0/24`网关处添加一条访问`192.168.0.0/24`时以`192.168.111.10`为网关。
+最后一步，这也是经常被忘记的一步：在服务器的局域网网关处添加一个路由，用以将`192.168.4.0/24`定向到OpenVPN服务器（如果OpenVPN服务器和局域网网关在同一计算机上，则无需这么做）。假设缺少了这一步，当你从`192.168.4.8`向服务器局域网的某台计算机发送`ping`命令时，这个外部ping命令很可能能够到达目标计算机，但是却不知道如何路由一个`ping`回复，因为它不知道如何达到`192.168.4.0/24`。主要的使用规则是：当全部的局域网都通过VPN时（并且OpenVPN服务器和局域网网关不在同一计算机），请确保在局域网网关处将所有的VPN子网都路由到VPN服务器所在计算机。
 
-二、在其他终端上添加路由表。（服务器所在网段的）Windows如下添加：`route add 192.168.111.0 mask 255.255.255.0 192.168.0.5`，（客户端所在网段的）Windows如下添加：`route add 192.168.5.0 mask 255.255.255.0 192.168.111.10`，如果添加永久路由，使用`-P`参数。其它系统的自行网上找资料。
+类似地，如果OpenVPN客户端和客户端局域网网关不在同一计算机上，请在客户端局域网网关处创建路由，以确保通过VPN的所有子网都能转向OpenVPN客户端所在计算机。
 
-三、可以综合参考以上两种方式，来控制加入此互访网络的终端。
+笔者注：上面的看得有点晕，简单介绍下在其他终端**添加路由**的几种方式：
+
+* 在网关添加路由。如在`10.66.0.0/24`网关处添加一条访问`192.168.4.0/24`时以`10.66.0.5`为网关，在`192.168.4.0/24`网关处添加一条访问`10.66.0.0/24`时以`192.168.4.10`为网关。
+* 在其他终端上添加路由表。（服务器所在网段的）Windows如下添加：`route add 192.168.4.0 mask 255.255.255.0 10.66.0.5`，（客户端所在网段的）Windows如下添加：`route add 10.66.0.0 mask 255.255.255.0 192.168.4.10`，如果添加永久路由，使用`-p`参数。其它系统的自行网上找资料。
+* 可以综合参考以上方式，来控制加入此互访网络的终端。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
