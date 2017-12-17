@@ -158,6 +158,53 @@ make install
 |client2.crt|client2|Client2证书|NO|
 |client2.key|client2|Client2密钥|YES|
 
+关于证书、密钥安全性的问题可查看原文。
+
+## 4. 创建配置文件
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#config)
+
+**取得示例配置文件**
+
+最好使用[OpenVPN示例配置文件](https://openvpn.net/index.php/open-source/documentation/howto.html#examples)作为配置起点。这些文件可以在下列地方找到：
+
+* OpenVPN源代码版的`sample-config-files`目录。
+* 如果通过RPM或DEB来安装OpenVPN，则为`/usr/share/doc/packages/openvpn`或`/usr/share/doc/openvpn`中的`sample-config-files`目录。
+* Windows系统中的【开始】->【所有程序】->【OpenVPN】->【Shortcuts】->【OpenVPN Sample Configuration Files】，也就是OpenVPN安装路径`/sample-config`目录。
+
+注意：在Linux、BSD或类Unix系统中，示例配置文件叫做`server.conf`和`client.conf`。在Windows中叫做`server.ovpn`和`client.ovpn`。
+
+**编辑服务器端配置文件**
+
+服务器端配置文件示例是OpenVPN服务器端配置的最佳起始点。
+
+该示例配置将使用一个虚拟的TUN网络接口（路由模式），在UDP端口1194（OpenVPN的官方端口号）监听远程连接，并从子网`10.8.0.0/24`中为连接的客户端分配虚拟地址。
+
+在使用示例配置文件之前，先编辑`ca`、`cert`、`key`、`dh`参数，将它们分别指向对应文件。
+
+此时，服务器端配置文件是可用的，但可以进一步自定义该文件：
+
+* 如果你使用的是[以太网桥接](https://openvpn.net/index.php/open-source/documentation/miscellaneous/76-ethernet-bridging.html)模式，必须使用`server-bridge`和`dev tap`指令来替代`server`和`dev tun`指令。
+* 如果想让你的OpenVPN服务器监听一个TCP端口，而不是UDP端口，使用`proto tcp`替代`proto udp`（如果想同时监听UDP和TCP端口，必须启动两个单独的OpenVPN实例）。
+* 如果你想使用`10.8.0.0/24`范围之外的虚拟IP地址，修改`server`指令。记住，虚拟IP地址范围必须是一个你当前网络未使用的私有范围。
+* 如果你想让通过VPN连接的客户端和客户端之间能够互访，启用`client-to-client`指令（去掉注释）。默认情况下，客户端只能够访问服务器。
+* 如果你正在使用Linux、BSD或类Unix操作系统，你可以使启用`user nobody`和`group nobody`指令来提高安全性。
+
+如果想要在同一计算机上运行多个OpenVPN实例，每一个示例都应该使用不同的配置文件。可能存在下列情形：
+
+* 每个示例使用不同的端口号（UDP和TCP协议使用不同的端口空间，因此你可以运行一个后台进程并同时监听UDP-1194和TCP-1194）。
+* 如果你使用的是Windows系统，每个OpenVPN配置都需要有自己的TAP-Windows适配器。你可以通过【开始】->【所有程序】->【TAP-Windows】->【Add a new TAP-Windows virtual ethernet adapter】来添加一个额外的适配器。
+* 如果你运行多个相同目录的OpenVPN实例，请确保编辑那些会创建输出文件的指令，以便于多个实例不会覆盖掉对方的输出文件。这些指令包括`log`、`log-append`、`status`和`ifconfig-pool-persist`。
+
+**编辑客户端配置文件**
+
+客户端配置示例文件（在Linux/BSD/Unix中为`client.conf`，在Windows中为`client.ovpn`）参照了服务器配置示例文件的默认指令设置。
+
+* 与服务器配置文件类似，首先编辑`ca`、`cert`和`key`参数，使它们指向对应文件。注意，每个客户端都应该有自己的证书/密钥对。只有`ca`文件是OpenVPN和所有客户端通用的。
+* 下一步，编辑`remote`指令，将其指向OpenVPN服务器的主机名/IP地址和端口号（如果OpenVPN服务器在防火墙或NAT网关之后的单网卡机器上运行，请使用网关的公网IP地址，和你在网关中配置的转发到OpenVPN服务器的端口号）。
+* 最后，确保客户端配置文件和用于服务器配置的指令保持一致。主要检查dev（dev或tap）和proto（udp或tcp）指令是否一致。此外，如果服务器和客户端配置文件都使用了`comp-lzo`和`fragment`指令，也需要保持一致。
+
+
 
 
 
