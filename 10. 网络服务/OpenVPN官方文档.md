@@ -725,6 +725,105 @@ username-as-common-name
 
 [英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#pkcs11)
 
+## 14. 路由所有客户端流量通过VPN
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#redirect)
+
+**概述**
+
+默认情况下，当一个OpenVPN客户端处于活动状态时，只有往返于OpenVPN服务器的网络流量才会通过VPN。如一般的网页浏览操作，将绕过VPN，直接连接来完成。
+
+在某些情况下，可能想让VPN客户端所有的网络流量均通过VPN，也包括一般的网络流量。虽然客户端的这种VPN配置将会耗费一些性能，但在客户端同时连接公共网络和VPN时，它给VPN管理员在安全策略上更多的控制能力。
+
+**实施**
+
+在服务器配置文件中添加如下指令：
+
+```
+push "redirect-gateway def1"
+```
+
+如果VPN安装在无线网络上，并且OpenVPN服务器和客户端均处于同一个无线子网中，请添加`local`标记：
+
+```
+push "redirect-gateway local def1"
+```
+
+推送`redirect-gateway`选项命令到客户端，将会导致源自客户端计算机的所有IP网络流量通过OpenVPN服务器。服务器需要进行配置，从而以某种方式处理这些流量，例如：通过NAT转化流量到internet，或者路由通过服务器所在网络场所的HTTP代理。在Linux系统中，你可以使用如下命令将VPN客户端的流量NAT转化到internet：
+
+```
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+```
+
+该命令假定VPN子网网段为`10.8.0.0/24`（取自OpenVPN服务器配置的server指令），本地以太网接口为eth0。
+
+当启用了`redirect-gateway`指令，OpenVPN客户端将路由所有的DNS查询经过VPN，VPN服务器需要处理掉这些查询。在VPN活动期间，我们可以通过推送DNS服务器地址到正在连接的客户端上来完成该操作，从而代替常规的DNS服务器设置：
+
+```
+push "dhcp-option DNS 10.8.0.1"
+```
+
+这将配置Windows客户端（或带有额外的服务器端脚本的非Windows客户端）使用`10.8.0.1`作为它们的DNS服务器。任何客户端能够到达的地址都可能作为DNS服务器。
+
+**注意事项**
+
+通过VPN重定向所有网络流量并不是完全没有问题的提议。以下是一些典型的疑难问题：
+
+* 多数连接internet的OpenVPN客户端计算机会定期与DHCP服务器进行交互，并更新它们的IP地址租约。`redirect-gateway`选项命令可能会阻止客户端连接到本地DHCP服务器（因为DHCP信息会被路由通过VPN），从而导致丢失IP地址租约。
+* 关于推送DNS地址到Windows客户端[存在一些问题](https://community.openvpn.net/openvpn/wiki/FAQ#dhcpcaveats)。
+* 客户端的Web浏览性能将会明显降低。
+
+关于`redirect-gateway`指令的更多信息，请参考[手册页面](https://openvpn.net/index.php/open-source/documentation/manuals/65-openvpn-20x-manpage.html)。
+
+## 15. 在动态IP地址上运行OpenVPN服务器
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#dynamic)
+
+## 16. 通过HTTP代理连接OpenVPN服务器
+
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#http)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
