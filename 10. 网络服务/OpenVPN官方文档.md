@@ -204,15 +204,103 @@ make install
 * 下一步，编辑`remote`指令，将其指向OpenVPN服务器的主机名/IP地址和端口号（如果OpenVPN服务器在防火墙或NAT网关之后的单网卡机器上运行，请使用网关的公网IP地址，和你在网关中配置的转发到OpenVPN服务器的端口号）。
 * 最后，确保客户端配置文件和用于服务器配置的指令保持一致。主要检查dev（dev或tap）和proto（udp或tcp）指令是否一致。此外，如果服务器和客户端配置文件都使用了`comp-lzo`和`fragment`指令，也需要保持一致。
 
+## 5. 启动VPN并测试
 
+**启动服务器**
 
+[英文原文](https://openvpn.net/index.php/open-source/documentation/howto.html#start)
 
+首先，确保OpenVPN服务器能够正常连接网络。这意味着：
 
+* 开启防火墙上的UDP-1194端口（或者你配置的其他端口）。
+* 或者，创建一个端口转发规则，将防火墙/网关的UDP-1194端口转发到运行OpenVPN服务器的计算机上。
 
+下一步，[确保TUN/TAP接口没有被防火墙屏蔽](https://community.openvpn.net/openvpn/wiki/FAQ#firewall)。
 
+为了简化故障排除，最好使用命令行来初始化启动OpenVPN服务器（或者在Windows上右击.ovpn文件），而不是以后台进程或服务的方式启动：
 
+```
+openvpn [服务器配置文件]
+```
 
+正常的服务器启动应该像这样：
 
+```
+Sun Feb  6 20:46:38 2005 OpenVPN 2.0_rc12 i686-suse-linux [SSL] [LZO] [EPOLL] built on Feb  5 2005
+Sun Feb  6 20:46:38 2005 Diffie-Hellman initialized with 1024 bit key
+Sun Feb  6 20:46:38 2005 TLS-Auth MTU parms [ L:1542 D:138 EF:38 EB:0 ET:0 EL:0 ]
+Sun Feb  6 20:46:38 2005 TUN/TAP device tun1 opened
+Sun Feb  6 20:46:38 2005 /sbin/ifconfig tun1 10.8.0.1 pointopoint 10.8.0.2 mtu 1500
+Sun Feb  6 20:46:38 2005 /sbin/route add -net 10.8.0.0 netmask 255.255.255.0 gw 10.8.0.2
+Sun Feb  6 20:46:38 2005 Data Channel MTU parms [ L:1542 D:1450 EF:42 EB:23 ET:0 EL:0 AF:3/1 ]
+Sun Feb  6 20:46:38 2005 UDPv4 link local (bound): [undef]:1194
+Sun Feb  6 20:46:38 2005 UDPv4 link remote: [undef]
+Sun Feb  6 20:46:38 2005 MULTI: multi_init called, r=256 v=256
+Sun Feb  6 20:46:38 2005 IFCONFIG POOL: base=10.8.0.4 size=62
+Sun Feb  6 20:46:38 2005 IFCONFIG POOL LIST
+Sun Feb  6 20:46:38 2005 Initialization Sequence Completed
+```
+
+**启动客户端**
+
+和服务器端配置一样，最好使用命令行来初始化启动OpenVPN客户端（在Windows上，也可以直接右击client.ovpn文件），而不是以后台进程或服务的方式来启动。
+
+```
+openvpn [客户端配置文件]
+```
+
+Windows上正常的客户端启动看起来与前面服务器端的输出非常相似，并且应该以`Initialization Sequence Completed`信息作为结尾。
+
+尝试从客户端通过VPN发送`ping`命令。
+
+如果你使用的是路由模式（例如：在服务器配置文件中设置`dev tun`），运行：
+
+```
+ping 10.8.0.1
+```
+
+如果使用桥接模式（例如：在服务器配置文件中设置`dev tap`），尝试ping一个服务器端的以太网子网中的IP地址。
+
+如果能够`ping`成功，那么就连接成功了。
+
+**故障排除**
+
+如果`ping`失败或者无法完成OpenVPN客户端的初始化，这里列出了一个常见问题以及对应解决方案的清单：
+
+1、得到错误信息：`TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)`。该错误表明客户端无法与服务器建立一个网络连接。
+
+解决方案：
+
+* 确保客户端配置中使用的服务器主机名/IP地址和端口号是正确的。
+* 如果OpenVPN服务器所在计算机只有单个网卡，并处于受保护的局域网内，请确保服务器端的网关防火墙使用了正确的端口转发规则。举个例子，假设你的OpenVPN服务器在某个局域网内，IP为`192.168.4.4`，并在UDP端口1194上监听客户端连接。服务于子网`192.168.4.x`的NAT网关应该有一个端口转发规则，该规则将公网IP地址的UDP端口1194转发到`192.168.4.4`。
+* 打开服务器防火墙，允许外部连接通过UDP-1194端口（或者在服务器配置文件中设置的其他端口）。
+
+2、得到错误信息：`Initialization Sequence Completed with errors`。该错误发生在：(a)你的Windows系统没有一个正在运行的DHCP客户端服务，(b)或者你在XP SP2上使用了某些第三方的个人防火墙。
+
+解决方案：
+
+* 启动DHCP客户端服务器，并确保在XP SP2系统中使用的是一个工作正常的个人防火墙。
+
+3、得到信息`Initialization Sequence Completed`但是`ping`测试失败。这通常意味着服务器或客户端的防火墙屏蔽了TUN/TAP接口，从而阻塞了VPN网络。
+
+解决方案：
+
+* 禁用客户端TUN/TAP接口上的防火墙（如果存在的话）。以Windows XP SP2为例，你可以进入【Windows安全中心】->【Windows 防火墙】->【高级】，并取消选中TAP-Windows适配器前面的复选框（从安全角度来说，禁止客户端防火墙屏蔽TUN/TAP接口通常是合理的，这是在告诉防火墙不要阻止可信的VPN流量）。此外，也需要确保服务器的TUN/TAP接口没有被防火墙屏蔽（不得不说的是，选择性地设置服务器端TUN/TAP接口的防火墙有助于提高一定的安全性，请参考访问策略部分）。
+* 笔者注：也有可能本身已连通但是`ping`的主机防火墙阻止了ICMP，可以进行相关设置后再尝试
+
+4、当采用UDP协议的配置启动时，出现连接中断，并且服务器日志文件显示下行：
+
+```
+TLS: Initial packet from x.x.x.x:x, sid=xxxxxxxx xxxxxxxx
+```
+
+但客户端的日志文件不会显示相同的信息。
+
+解决方案：
+
+* 你只有一个从客户端到服务器的单向连接。而从服务器到客户端的方向则被（通常是客户端这边的）防火墙阻挡了。该防火墙可能是运行于客户端的个人软件防火墙，或是客户端的NAT路由网关。请修改防火墙以允许从服务器到客户端的UDP数据包返回。
+
+想了解更多额外的故障排除信息，请查看[FAQ](https://community.openvpn.net/openvpn/wiki/FAQ)。
 
 
 
