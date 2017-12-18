@@ -474,19 +474,13 @@ push "route 10.66.0.0 255.255.255.0"
 
 检查：运行`ipconfig -all`，查看“Windows IP 配置”中显示`IP 路由已启用: 是`
 
-防火墙无特别设置，可以先关闭防火墙，用ping测试是否连通会方便些，测试完成后再打开防火墙
-
 **Linux**：
 
 `echo 1 > /proc/sys/net/ipv4/ip_forward`
 
-防火墙设置：iptables添加`-A FORWARD -d 192.168.4.0/24 -j ACCEPT`；firewalld运行`firewall-cmd --permanent --direct --passthrough ipv4 -t nat -I POSTROUTING -o eth0 -j MASQUERADE -s 192.168.4.0/24`
-
 **OS X**：
 
 `sudo sysctl -w net.inet.ip.forwarding=1`
-
-未测试是否需要配置防火墙
 
 下一步，需要在服务器端做一些必要的配置更改。如果当前的服务器配置文件没有引用一个客户端配置目录，添加一个：
 
@@ -530,6 +524,113 @@ OpenVPN服务器将向其他正在连接的客户端宣告`client2`子网的存�
 * 在网关添加路由。如在`10.66.0.0/24`网关处添加一条访问`192.168.4.0/24`时以`10.66.0.5`为网关，在`192.168.4.0/24`网关处添加一条访问`10.66.0.0/24`时以`192.168.4.10`为网关。
 * 在其他终端上添加路由表。（服务器所在网段的）Windows如下添加：`route add 192.168.4.0 mask 255.255.255.0 10.66.0.5`，（客户端所在网段的）Windows如下添加：`route add 10.66.0.0 mask 255.255.255.0 192.168.4.10`，如果添加永久路由，使用`-p`参数。其它系统的自行网上找资料。
 * 可以综合参考以上方式，来控制加入此互访网络的终端。
+
+### 9.1. 防火墙规则
+
+基于路由模式（`dev tun`）时，OpenVPN服务器上防火墙配置（主要是关于防火墙如何工作，熟悉的可以略过了）简要归纳（开放监听端口不在此赘述）：
+
+假设环境如下：
+
+服务端网段`10.66.0.0/24`下设备：OpenVPN服务器IP地址`10.66.0.5`,A服务器（Windows）IP地址`10.66.0.33`
+
+OpenVPN虚拟IP网段`10.8.0.0/24`
+
+客户端网段`192.168.4.0`下设备：OpenVPN客户端IP地址`192.168.4.10`,X终端（Windows）IP地址`192.168.4.66`
+
+1、防火墙不添加任何设置：
+
+只能客户端与服务器互相访问（两者正常情况都可以互相访问，下面不再单独说明，以下所有访问指的使用`ping`测试通过，测试时Windows系统注意关闭防火墙或者设置规则允许ICMP协议入站）
+
+2、防火墙设置：
+
+```
+*filter
+# 允许进tun接口目标为“10.8.0.0/24”的访问
+-A FORWARD -o tun+ -d 10.8.0.0/24 -j ACCEPT  # “+”也可改为实际的“tun[n]”，如“tun0”、“tun1”...
+# 允许源为“10.8.0.0/24”出tun接口的访问
+-A FORWARD -i tun+ -s 10.8.0.0/24 -j ACCEPT
+# 如果需要设置指定可以访问的服务器范围，删除上面一行,如下设置
+-A FORWARD -i tun+ -s 10.8.0.0/24 -d 10.66.0.33 -j ACCEPT  # OpenVPN客户端不能访问到除10.66.0.33外其他的服务器（如果存在）
+```
+
+无其它设置时还是只能客户端与服务器互相访问，在A服务器添加路由表：`route add 10.8.0.0 mask 255.255.255.0 10.66.0.5`（或在服务器网关处添加类似路由，以下所有路由表都可以在网关处添加来替换该步骤，只不过作用范围不同，下面不再单独说明），
+OpenVPN客户端和A服务器可以互相访问
+
+3、防火墙设置：
+
+```
+*nat
+# 添加下面一行，OpenVPN服务器可访问的地址，客户端也可以访问
+-A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
+# 或如下设置指定网卡（若添指定了网卡，那么OpenVPN服务器自身通过该网卡不能访问的地址，客户端也不能访问）
+-A POSTROUTING -o eth0 -s 10.8.0.0/24 -j MASQUERADE
+
+*filter
+-A FORWARD -o tun+ -d 10.8.0.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 10.8.0.0/24 -j ACCEPT
+```
+
+无其它设置时OpenVPN客户端可以访问到A服务器，A服务器访问不到OpenVPN客户端，在A服务器添加路由表：`route add 10.8.0.0 mask 255.255.255.0 10.66.0.5`，OpenVPN客户端和A服务器可以互相访问
+
+**小结**：
+
+要客户端与服务器所在网段其他设备互相访问需要的防火墙设置为：
+
+```
+*nat
+-A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE  # 可视实际情况（如配置了路由表或是服务器网关）选择不配置
+
+*filter
+-A FORWARD -o tun+ -d 10.8.0.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 10.8.0.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 10.8.0.0/24 -d 10.66.0.33 -j ACCEPT  # 此规则与上一行选一种来使用
+```
+
+如果对tun接口的所有流量都允许，可最简（最宽松的防火墙设置，不建议，可根据具体使用场景来综合考虑使用配置）为：
+
+```
+*nat
+-A POSTROUTING -j MASQUERADE
+
+*filter
+-A FORWARD -o tun+ -j ACCEPT
+-A FORWARD -i tun+ -j ACCEPT
+```
+
+firewalld防火墙设置，有空再测试。
+
+以下内容假设服务器已按“包含基于路由模式的VPN客户端的多台计算机”步骤配置好服务器和客户端（除开OpenVPN服务器防火墙相关内容）：
+
+4、防火墙设置：
+
+```
+*filter
+-A FORWARD -o tun+ -d 10.8.0.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 10.8.0.0/24 -j ACCEPT
+-A FORWARD -o tun+ -d 192.168.4.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 192.168.4.0/24 -j ACCEPT  # 同样可以加入类似“-d 10.66.0.33”对允许访问的服务器进行限制
+```
+
+无其它设置时还是只能客户端与服务器互相访问，在A服务器添加路由表：`route add 192.168.4.0 mask 255.255.255.0 10.66.0.5`，在X终端添加路由表：`route add 10.66.0.0 mask 255.255.255.0 192.168.4.10`，
+OpenVPN客户端、X终端、OpenVPN服务器及A服务器可以互相访问
+
+5、一些其他测试：
+
+```
+*filter
+-A FORWARD -o tun+ -d 192.168.4.0/24 -j ACCEPT
+-A FORWARD -i tun+ -s 192.168.4.0/24 -j ACCEPT
+```
+
+去掉了关于`10.8.0.0/24`的内容，只要添加好了路由表，各设备之间还是可以通过真实局域网IP地址来访问
+
+同样如果对tun接口的所有流量都允许，可以简化为：
+
+```
+*filter
+-A FORWARD -o tun+ -j ACCEPT
+-A FORWARD -i tun+ -j ACCEPT
+```
 
 ## 10. 推送DHCP选项到客户端
 
