@@ -34,4 +34,10 @@
   * [6.5.6. Redis复制](../6. 数据库/6.5. Redis.html#656-redis复制)
   * [6.5.7. Redis Sentinel](../6. 数据库/6.5. Redis.html#657-redis-sentinel)
   * [6.5.8. Redis Benchmark](../6. 数据库/6.5. Redis.html#658-redis-benchmark)
-  
+* [6.6. MS SQL Server](../6. 数据库/6.6. MS SQL Server.html)
+  * [6.6.1. 安装SQL Server](../6. 数据库/6.6. MS SQL Server.html#661-安装SQL-Server)
+  * [6.6.2. 安装SQL Server命令行工具](../6. 数据库/6.6. MS SQL Server.html#662-安装SQL-Server命令行工具)
+  * [6.6.3. 本地连接](../6. 数据库/6.6. MS SQL Server.html#663-本地连接)
+  * [6.6.4. 升级](../6. 数据库/6.6. MS SQL Server.html#664-升级)
+  * [6.6.5. 卸载](../6. 数据库/6.6. MS SQL Server.html#665-卸载)
+
