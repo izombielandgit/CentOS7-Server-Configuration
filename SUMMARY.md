@@ -38,6 +38,7 @@
   * [6.3. Oracle Database](6. 数据库/6.3. Oracle Database.md)
   * [6.4. Memcached](6. 数据库/6.4. Memcached.md)
   * [6.5. Redis](6. 数据库/6.5. Redis.md)
+  * [6.6. MS SQL Server](6. 数据库/6.6. MS SQL Server.md)
 * [7. 目录服务](7. 目录服务/Introduction.md)
   * [7.1. FreeIPA](7. 目录服务/7.1. FreeIPA.md)
   * [7.2. OpenLDAP](7. 目录服务/7.2. OpenLDAP.md)
