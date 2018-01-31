@@ -10,4 +10,5 @@
   * [3.4.2. VNC客户端](../3. 桌面环境/3.4. VNC服务器.html#342-vnc客户端)
      * [3.4.2.1. Windows客户端](../3. 桌面环境/3.4. VNC服务器.html#3421-windows客户端)
      * [3.4.2.2. noVNC](../3. 桌面环境/3.4. VNC服务器.html#3422-novnc)
+     * [3.4.2.3. Guacamole](../3. 桌面环境/3.4. VNC服务器.html#3423-guacamole)
 * [3.5. RDP连接到Windows](../3. 桌面环境/3.5. RDP连接到Windows.html)
