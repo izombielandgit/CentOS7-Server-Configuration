@@ -21,3 +21,16 @@
   * [8.2.3. Samba Winbind](../8. 文件服务器/8.2. Samba.html#823-samba-winbind)
   * [8.2.4. Samba AD DC](../8. 文件服务器/8.2. Samba.html#824-samba-ad-dc)
 * [8.3. ownCloud](../8. 文件服务器/8.3. ownCloud.html)
+* [8.4. Seafile](../8. 文件服务器/8.4. Seafile.html)
+  [8.4.1. 部署Seafile服务器](../8. 文件服务器/8.4. Seafile.html#841-部署seafile服务器)
+  [8.4.2. Office文件预览和编辑](../8. 文件服务器/8.4. Seafile.html#842-office文件预览和编辑)
+  [8.4.3. 升级](../8. 文件服务器/8.4. Seafile.html#843-升级)
+  [8.4.4. Seafile服务器的一些优化](../8. 文件服务器/8.4. Seafile.html#844-seafile服务器的一些优化)
+  [8.4.5. 服务器个性化配置](../8. 文件服务器/8.4. Seafile.html#845-服务器个性化配置)
+  [8.4.6. 日常维护](../8. 文件服务器/8.4. Seafile.html#846-日常维护)
+
+
+
+
+
+
